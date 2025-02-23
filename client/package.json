@@ -26,5 +26,6 @@
   },
   "overrides": {
     "esbuild": "0.24.0"
-  }
+  },
+  "proxy": "https://code-storage-app-kux5.onrender.com"
 }
