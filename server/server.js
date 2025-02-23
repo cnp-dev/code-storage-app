@@ -1,17 +1,19 @@
+import dotenv from 'dotenv';
+dotenv.config(); // Load environment variables first
+
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import dotenv from 'dotenv';
+
 import authRoutes from './routes/auth.js';
 import codeRoutes from './routes/codes.js';
 import viewerRoutes from './routes/viewers.js';
 
-dotenv.config();
 const app = express();
 
 // ✅ Allow Frontend (React) to Access Backend
 const corsOptions = {
-  origin: "http://localhost:3000", // Change this to your frontend URL in production
+  origin: process.env.CLIENT_URL || "http://localhost:3000", // Use env variable for flexibility
   credentials: true, // Allows cookies if needed
 };
 app.use(cors(corsOptions));
@@ -33,6 +35,11 @@ const connectDB = async () => {
 };
 connectDB();
 
+// Handle MongoDB connection events
+mongoose.connection.on("connected", () => console.log("🟢 MongoDB connected"));
+mongoose.connection.on("error", (err) => console.error("🔴 MongoDB error:", err));
+mongoose.connection.on("disconnected", () => console.log("🟡 MongoDB disconnected"));
+
 // ✅ API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/codes', codeRoutes);
@@ -45,4 +52,4 @@ app.get('/', (req, res) => {
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, "0.0.0.0", () => console.log(`🚀 Server running on port ${PORT}`));
