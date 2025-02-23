@@ -5,12 +5,19 @@ import { Link } from 'react-router-dom';
 function Home({ user }) {
   const [languages, setLanguages] = useState([]);
 
+  // Backend API URL from environment variables or default
+  const API_BASE_URL = process.env.REACT_APP_API_URL;
+
   useEffect(() => {
     if (user) {
       const fetchLanguages = async () => {
-        const { data } = await axios.get('/api/codes');
-        const uniqueLanguages = [...new Set(data.map(code => code.language))];
-        setLanguages(uniqueLanguages);
+        try {
+          const { data } = await axios.get(`${API_BASE_URL}/api/codes`);
+          const uniqueLanguages = [...new Set(data.map(code => code.language))];
+          setLanguages(uniqueLanguages);
+        } catch (error) {
+          console.error("Error fetching languages:", error);
+        }
       };
       fetchLanguages();
     }
